@@ -7,8 +7,12 @@ module.exports = class extends Base {
    * @return {Promise} []
    */
   async listAction() {
-    const orderList = await this.model('order').where({ user_id: this.getLoginUserId() }).page(1, 10).countSelect();
+    
+    const orderList = await this.model('order').where({ user_id: this.getLoginUserId() }).page(1, 100).countSelect();
+    //shanxi-config page(1,100) for order.wxml how many order to show.
+    
     const newOrderList = [];
+    console.log(orderList);
     for (const item of orderList.data) {
       // 订单的商品
       item.goodsList = await this.model('order_goods').where({ order_id: item.id }).select();
