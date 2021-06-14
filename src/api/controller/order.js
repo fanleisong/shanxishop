@@ -10,9 +10,9 @@ module.exports = class extends Base {
     
     const orderList = await this.model('order').where({ user_id: this.getLoginUserId() }).page(1, 100).countSelect();
     //shanxi-config page(1,100) for order.wxml how many order to show.
-    
+
     const newOrderList = [];
-    console.log(orderList);
+   // console.log(orderList);
     for (const item of orderList.data) {
       // 订单的商品
       item.goodsList = await this.model('order_goods').where({ order_id: item.id }).select();
@@ -67,7 +67,6 @@ module.exports = class extends Base {
 
     // 订单可操作的选择,删除，支付，收货，评论，退换货
     const handleOption = await this.model('order').getOrderHandleOption(orderId);
-
     return this.success({
       orderInfo: orderInfo,
       orderGoods: orderGoods,
@@ -181,4 +180,18 @@ module.exports = class extends Base {
     const latestExpressInfo = await this.model('order_express').getLatestOrderExpress(orderId);
     return this.success(latestExpressInfo);
   }
+
+  /**
+   * 删除订单列表
+   * 樊雷松
+   * @return {Promise} []
+   */
+   async deleteAction() {
+    const order_sn = this.post('ordersn');
+    const orderInfo = await this.model('order').where({ order_sn: order_sn }).find();
+ //   console.log(orderInfo.id);
+    await this.model('order_goods').where({ order_id: orderInfo.id }).delete();
+    const delteresult = await this.model('order').where({ order_sn: order_sn }).delete();
+    return this.success(delteresult);
+    }
 };
